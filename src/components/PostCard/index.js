@@ -1,9 +1,7 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   View,
   FlatList,
-  StyleSheet,
-  Dimensions,
   ImageBackground,
   Text,
   TouchableOpacity,
@@ -18,29 +16,44 @@ import * as Sharing from "expo-sharing";
 import { Colors } from "../../constant/Colors";
 import styles from "./style";
 import CommonLoadingIndicator from "../CommonLoadingIndicator";
+import { get, ref } from "firebase/database";
+import { database } from "../../config/database";
+
 
 const PostCard = () => {
-  const images = [
-    {
-      id: "1",
-      uri: "https://img.freepik.com/premium-vector/social-media-post-adpost-banner-adpost-template-design-vector-illustration_784842-2634.jpg"
-    },
-    {
-      id: "2",
-      uri: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-    },
-    {
-      id: "3",
-      uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyWGXlz1cRL_q-g7UexXBtmUj6rnAxNQ4OjOVFY1JWDRSn2PZW8NiUMGdLjoujA5oGo44&usqp=CAU"
-    },
-    {
-      id: "4",
-      uri: "https://img.freepik.com/premium-vector/social-media-post-adpost-banner-adpost-template-design-vector-illustration_784842-2630.jpg"
-    }
-  ];
-
   const [activeIndex, setActiveIndex] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [uploadedImages, setUploadedImages] = useState([]);
+
+  const formatedDateyyyymmdd = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  const fetchImagesForDate = async (date) => {
+    setLoading(true);
+    try {
+      const snapshot = await get(ref(database, 'uploaded Images'));
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const imagesArray = Object.values(data).filter(item => item.date === date);
+        setUploadedImages(imagesArray);
+      } else {
+        setUploadedImages([]);
+      }
+    } catch (err) {
+      console.error("Error fetching images:", err);
+    } finally {
+      setLoading(false)
+    }
+  };
+
+  useEffect(() => {
+    fetchImagesForDate(formatedDateyyyymmdd(new Date()));
+  }, []);
+
 
   const onViewableItemsChanged = useRef(({ viewableItems }) => {
     if (viewableItems.length > 0) {
@@ -66,19 +79,24 @@ const PostCard = () => {
     if (!hasPermission) return;
 
     try {
-      const fileExtension = fileUrl.split(".").pop();
-      const filename = `post_${Date.now()}.${fileExtension}`;
-      const fileUri = FileSystem.cacheDirectory + filename;
+      let localUri = fileUrl;
 
-      const downloadResumable = FileSystem.createDownloadResumable(
-        fileUrl,
-        fileUri
-      );
+      // If it's a remote URL, download it
+      if (fileUrl.startsWith("http") || fileUrl.startsWith("https")) {
+        const fileExtension = fileUrl.split(".").pop();
+        const filename = `post_${Date.now()}.${fileExtension}`;
+        const fileUri = FileSystem.cacheDirectory + filename;
 
-      const { uri } = await downloadResumable.downloadAsync();
-      console.log("Downloaded to:", uri);
+        const downloadResumable = FileSystem.createDownloadResumable(
+          fileUrl,
+          fileUri
+        );
 
-      const asset = await MediaLibrary.createAssetAsync(uri);
+        const { uri } = await downloadResumable.downloadAsync();
+        localUri = uri;
+      }
+
+      const asset = await MediaLibrary.createAssetAsync(localUri);
       const album = await MediaLibrary.getAlbumAsync("Download");
 
       if (album) {
@@ -87,7 +105,7 @@ const PostCard = () => {
         await MediaLibrary.createAlbumAsync("Download", asset, false);
       }
 
-      Alert.alert("Success", "Download Successfully and saved to gallery!");
+      Alert.alert("Success", "Downloaded successfully and saved to gallery!");
     } catch (error) {
       console.error("Download/save error:", error);
       Alert.alert("Error", "Failed to download or save the file.");
@@ -99,23 +117,29 @@ const PostCard = () => {
   const shareLocalFile = async (fileUrl) => {
     setLoading(true);
     try {
-      const fileExtension = fileUrl.split(".").pop();
-      const filename = `post_${Date.now()}.${fileExtension}`;
-      const fileUri = FileSystem.cacheDirectory + filename;
+      let localUri = fileUrl;
 
-      const downloadResumable = FileSystem.createDownloadResumable(
-        fileUrl,
-        fileUri
-      );
+      // If it's a remote URL, download it
+      if (fileUrl.startsWith("http") || fileUrl.startsWith("https")) {
+        const fileExtension = fileUrl.split(".").pop();
+        const filename = `post_${Date.now()}.${fileExtension}`;
+        const filePath = FileSystem.cacheDirectory + filename;
 
-      const { uri } = await downloadResumable.downloadAsync();
+        const downloadResumable = FileSystem.createDownloadResumable(
+          fileUrl,
+          filePath
+        );
+
+        const { uri } = await downloadResumable.downloadAsync();
+        localUri = uri;
+      }
 
       if (!(await Sharing.isAvailableAsync())) {
         Alert.alert("Sharing not available on this device");
         return;
       }
 
-      await Sharing.shareAsync(uri);
+      await Sharing.shareAsync(localUri);
     } catch (error) {
       console.error("Sharing error:", error);
       Alert.alert("Error", "Failed to share the post.");
@@ -141,7 +165,7 @@ const PostCard = () => {
               <Icon
                 name="download-circle-outline"
                 size={25}
-                color={Colors.tintColor}
+                color={Colors.tintColor_black}
               />
             </TouchableOpacity>
             <TouchableOpacity
@@ -151,7 +175,7 @@ const PostCard = () => {
               <Icon
                 name="share-variant-outline"
                 size={25}
-                color={Colors.tintColor}
+                color={Colors.tintColor_black}
               />
             </TouchableOpacity>
           </View>
@@ -184,9 +208,9 @@ const PostCard = () => {
       ) : (
         <View style={styles.cardContainer}>
           <FlatList
-            data={images}
+            data={uploadedImages}
             renderItem={renderItem}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(_, index) => index.toString()}
             horizontal
             pagingEnabled
             showsHorizontalScrollIndicator={false}
@@ -194,7 +218,7 @@ const PostCard = () => {
             viewabilityConfig={{ viewAreaCoveragePercentThreshold: 50 }}
           />
           <View style={styles.paginationDots}>
-            {images.map((_, index) => (
+            {uploadedImages.map((_, index) => (
               <View
                 key={index}
                 style={[
