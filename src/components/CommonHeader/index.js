@@ -7,7 +7,7 @@ const CommonHeader = () => {
   return (
     <View style={styles.headerContainer}>
       <View style={styles.curvedBackground}>
-        <Text style={styles.logoText}>After Makers 1</Text>
+        <Text style={styles.logoText}>After Makers</Text>
       </View>
     </View>
   );
