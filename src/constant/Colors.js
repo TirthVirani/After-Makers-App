@@ -3,5 +3,6 @@ export const Colors = {
   tintColor_black: "#000",
   tintColor_white: "#fff",
   btnColor: "#0cc9f1",
-  borderColor: "#3A3A3C"
+  borderColor: "#3A3A3C",
+  lightRed: "#ff6242",
 };
