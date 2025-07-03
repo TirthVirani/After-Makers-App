@@ -11,48 +11,7 @@ import { get, push } from "firebase/database";
 const PostUploadScreen = ({ navigation }) => {
   const [selected, setSelected] = useState("");
   const [uploadedImages, setUploadedImages] = useState([]);
-
-  // const handleImagePick = async () => {
-  //   const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.Images });
-  //   console.log('result', result)
-  //   if (!result.canceled) {
-  //     const asset = result.assets[0];
-  //     const fileUri = asset.uri;
-  //     const fileName = fileUri.split('/').pop();
-  //     console.log('fileName', fileName)
-
-  //     const file = await FileSystem.readAsStringAsync(fileUri, {
-  //       encoding: FileSystem.EncodingType.Base64,
-  //     });
-  //     // console.log('file', file)
-
-  //     const imageRef = ref(storage, `posts/${selected}/${fileName}`);
-  //     const imageBlob = new Uint8Array(Buffer.from(file, 'base64'));
-  //     // console.log('imageRef imageBlob', imageRef, imageBlob)
-
-  //     await uploadBytes(imageRef, imageBlob);
-  //     const downloadURL = await getDownloadURL(imageRef);
-  //     // console.log('downloadURL', downloadURL)
-
-  //     await addDoc(collection(database, "uploads"), {
-  //       date: selected,
-  //       imageUrl: downloadURL,
-  //       createdAt: new Date(),
-  //     });
-
-  //     fetchImagesForDate(selected);
-  //   }
-  // };
-  // const fetchImagesForDate = async (date) => {
-  //   const q = query(collection(database, "uploads"), where("date", "==", date));
-  //   const snapshot = await getDocs(q);
-  //   const urls = snapshot.docs.map((doc) => doc.data().imageUrl);
-  //   setUploadedImages(urls);
-  // };
-
-  // useEffect(() => {
-  //   if (selected) fetchImagesForDate(selected);
-  // }, [selected]);
+  const [markedDates, setMarkedDates] = useState({});
 
   const pickAndUpload = async () => {
     try {
@@ -110,11 +69,50 @@ const PostUploadScreen = ({ navigation }) => {
     }
   };
 
+  const fetchAllMarkedDates = async () => {
+    try {
+      const snapshot = await get(ref(database, 'uploaded Images'));
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const datesMap = {};
+
+        Object.values(data).forEach((item) => {
+          if (item.date) {
+            if (!datesMap[item.date]) {
+              datesMap[item.date] = {
+                marked: true,
+                dots: [{ color: 'orange' }]
+              };
+            }
+          }
+        });
+
+        if (selected) {
+          datesMap[selected] = {
+            ...datesMap[selected],
+            selected: true,
+            disableTouchEvent: true,
+            selectedDotColor: "red",
+            selectedColor: Colors.btnColor,
+          };
+        }
+
+        setMarkedDates(datesMap);
+      } else {
+        setMarkedDates({});
+      }
+    } catch (err) {
+      console.error("Error fetching marked dates:", err);
+    }
+  };
+
+
   useEffect(() => {
     if (selected) {
       fetchImagesForDate(selected);
     }
-  }, [selected]);
+    fetchAllMarkedDates();
+  }, [selected, uploadedImages, uploadedImages.length]);
 
   return (
     <View style={styles.rootContainer}>
@@ -129,22 +127,18 @@ const PostUploadScreen = ({ navigation }) => {
           onDayPress={(day) => {
             setSelected(day.dateString);
           }}
-          markedDates={{
-            [selected]: {
-              selected: true,
-              disableTouchEvent: true,
-              selectedDotColor: "orange"
-            }
-          }}
+          markedDates={markedDates}
           theme={{
             calendarBackground: Colors.backgroundColor,
             textSectionTitleColor: Colors.tintColor_white,
             todayTextColor: Colors.btnColor,
             dayTextColor: Colors.tintColor_white,
             textDisabledColor: Colors.borderColor,
+            disabledDotColor: Colors.borderColor,
             monthTextColor: Colors.tintColor_white,
             textMonthFontWeight: 'bold',
             textMonthFontSize: 18,
+            dotColor: Colors.lightRed
           }}
         />
       </View>
@@ -164,14 +158,18 @@ const PostUploadScreen = ({ navigation }) => {
       {uploadedImages.length > 0 && (
         <FlatList
           data={uploadedImages}
-          keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
-            <Image
-              source={{ uri: item.uri }}
-              style={{ width: 200, aspectRatio: 1, margin: 8 }}
-              resizeMode="cover"
-            />
+            <View style={{ paddingVertical: 10 }}>
+              <Image
+                source={{ uri: item.uri }}
+                style={{ height: "70%", aspectRatio: 1, margin: 8 }}
+                resizeMode="cover"
+              />
+            </View>
           )}
+          keyExtractor={(_, index) => index.toString()}
+          horizontal
+          showsHorizontalScrollIndicator={false}
         />
       )}
     </View>

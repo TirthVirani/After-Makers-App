@@ -42,3 +42,6 @@ babel-cache/
 # Yarn
 .yarn/
 .pnp.*
+
+# NPM lock file
+package-lock.json
