@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 
 import { ref, set } from "firebase/database";
@@ -57,7 +57,7 @@ export default function RegisterScreen({ navigation }) {
         pin
       );
       const userRef = ref(database, "users/" + email.replace(".", ","));
-
+      const id = Math.ceil(Math.random() * 1000);
       const now = Date.now();
       let expiresAt;
       if (selectedPlan === "1m") {
@@ -67,6 +67,7 @@ export default function RegisterScreen({ navigation }) {
       }
 
       await set(userRef, {
+        id,
         companyName,
         email,
         phoneNumber,
@@ -75,13 +76,14 @@ export default function RegisterScreen({ navigation }) {
         fileUrl,
         package: {
           createdAt: now,
-          expiresAt: expiresAt
-        }
+          expiresAt: expiresAt,
+        },
       });
       Alert.alert("Success", "User registered successfully");
 
       dispatch(
         addUser({
+          id,
           companyName,
           email,
           phoneNumber,
@@ -90,8 +92,8 @@ export default function RegisterScreen({ navigation }) {
           fileUrl,
           package: {
             createdAt: now,
-            expiresAt: expiresAt
-          }
+            expiresAt: expiresAt,
+          },
         })
       );
     } catch (error) {
@@ -121,7 +123,7 @@ export default function RegisterScreen({ navigation }) {
               <ScrollView
                 contentContainerStyle={{
                   flexGrow: 1,
-                  justifyContent: "center"
+                  justifyContent: "center",
                 }}
                 keyboardShouldPersistTaps="never"
                 showsVerticalScrollIndicator={false}
@@ -162,7 +164,7 @@ export default function RegisterScreen({ navigation }) {
                     <TouchableOpacity
                       style={[
                         styles.radioButton,
-                        selectedPlan === "1m" && styles.radioButtonSelected
+                        selectedPlan === "1m" && styles.radioButtonSelected,
                       ]}
                       onPress={() => setSelectedPlan("1m")}
                     >
@@ -171,7 +173,7 @@ export default function RegisterScreen({ navigation }) {
                     <TouchableOpacity
                       style={[
                         styles.radioButton,
-                        selectedPlan === "2y" && styles.radioButtonSelected
+                        selectedPlan === "2y" && styles.radioButtonSelected,
                       ]}
                       onPress={() => setSelectedPlan("2y")}
                     >

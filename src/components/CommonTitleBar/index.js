@@ -9,7 +9,13 @@ import styles from "./style";
 import { auth } from "../../config/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const CommonTitleBar = ({ title, style, backIcon, onBackPress }) => {
+const CommonTitleBar = ({
+  title,
+  style,
+  backIcon,
+  onBackPress,
+  logOutIcon,
+}) => {
   const userData = useSelector((val) => val.user);
   // console.log("titlebar data:::", userData);
   const navigation = useNavigation();
@@ -34,8 +40,8 @@ const CommonTitleBar = ({ title, style, backIcon, onBackPress }) => {
             console.error("Logout error:", error);
             Alert.alert("Error", "Failed to log out. Please try again.");
           }
-        }
-      }
+        },
+      },
     ]);
 
   return (
@@ -73,13 +79,18 @@ const CommonTitleBar = ({ title, style, backIcon, onBackPress }) => {
           </View>
 
           <View style={styles.sideContainer}>
-            <TouchableOpacity style={styles.iconButton} onPress={logOutHandler}>
-              <Icon
-                name="power-standby"
-                size={28}
-                color={Colors.tintColor_white}
-              />
-            </TouchableOpacity>
+            {logOutIcon && (
+              <TouchableOpacity
+                style={styles.iconButton}
+                onPress={logOutHandler}
+              >
+                <Icon
+                  name="power-standby"
+                  size={28}
+                  color={Colors.tintColor_white}
+                />
+              </TouchableOpacity>
+            )}
           </View>
         </>
       ) : (

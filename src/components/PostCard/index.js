@@ -5,7 +5,7 @@ import {
   ImageBackground,
   Text,
   TouchableOpacity,
-  Alert
+  Alert,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import moment from "moment";
@@ -19,7 +19,6 @@ import CommonLoadingIndicator from "../CommonLoadingIndicator";
 import { get, ref } from "firebase/database";
 import { database } from "../../config/database";
 
-
 const PostCard = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -27,18 +26,20 @@ const PostCard = () => {
 
   const formatedDateyyyymmdd = (date) => {
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
-  }
+  };
 
   const fetchImagesForDate = async (date) => {
     setLoading(true);
     try {
-      const snapshot = await get(ref(database, 'uploaded Images'));
+      const snapshot = await get(ref(database, "uploaded Images"));
       if (snapshot.exists()) {
         const data = snapshot.val();
-        const imagesArray = Object.values(data).filter(item => item.date === date);
+        const imagesArray = Object.values(data).filter(
+          (item) => item.date === date
+        );
         setUploadedImages(imagesArray);
       } else {
         setUploadedImages([]);
@@ -46,14 +47,13 @@ const PostCard = () => {
     } catch (err) {
       console.error("Error fetching images:", err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchImagesForDate(formatedDateyyyymmdd(new Date()));
   }, []);
-
 
   const onViewableItemsChanged = useRef(({ viewableItems }) => {
     if (viewableItems.length > 0) {
@@ -223,7 +223,7 @@ const PostCard = () => {
                 key={index}
                 style={[
                   styles.dot,
-                  index === activeIndex ? styles.activeDot : styles.inactiveDot
+                  index === activeIndex ? styles.activeDot : styles.inactiveDot,
                 ]}
               />
             ))}

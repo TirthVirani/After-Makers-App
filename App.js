@@ -11,6 +11,7 @@ import TabNavigation from "./src/navigation/TabNavigation";
 import AdminDashboard from "./src/screens/AdminDashboard";
 import PostUploadScreen from "./src/screens/AdminDashboard/PostUploadScreen";
 import RegisterScreen from "./src/screens/AdminDashboard/RegisterScreen";
+import UserDetailsScreen from "./src/screens/AdminDashboard/UserDetailsScreen";
 
 const Stack = createStackNavigator();
 
@@ -25,42 +26,49 @@ export default function App() {
               name="SplashScreen"
               component={SplashScreen}
               options={{
-                headerShown: false
+                headerShown: false,
               }}
             />
             <Stack.Screen
               name="SignInScreen"
               component={SignInScreen}
               options={{
-                headerShown: false
+                headerShown: false,
               }}
             />
             <Stack.Screen
               name="AdminDashboard"
               component={AdminDashboard}
               options={{
-                headerShown: false
+                headerShown: false,
               }}
             />
             <Stack.Screen
               name="RegisterScreen"
               component={RegisterScreen}
               options={{
-                headerShown: false
+                headerShown: false,
               }}
             />
             <Stack.Screen
               name="PostUploadScreen"
               component={PostUploadScreen}
               options={{
-                headerShown: false
+                headerShown: false,
               }}
             />
             <Stack.Screen
               name="TabNavigation"
               component={TabNavigation}
               options={{
-                headerShown: false
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="UserDetailsScreen"
+              component={UserDetailsScreen}
+              options={{
+                headerShown: false,
               }}
             />
           </Stack.Navigator>
@@ -73,6 +81,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.backgroundColor
-  }
+    backgroundColor: Colors.backgroundColor,
+  },
 });
