@@ -30,11 +30,11 @@ const styles = StyleSheet.create({
   detailsName: {
     fontSize: 17,
     fontWeight: "bold",
-    color: Colors.tintColor_white,
+    color: Colors.tintColor_black,
   },
   detailsValue: {
     fontSize: 15,
-    color: Colors.tintColor_white,
+    color: Colors.tintColor_black,
   },
   actionContainer: {
     flexDirection: "row",
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   },
   actionText: {
     fontSize: 10,
-    color: Colors.tintColor_white,
+    color: Colors.tintColor_black,
   },
 });
 

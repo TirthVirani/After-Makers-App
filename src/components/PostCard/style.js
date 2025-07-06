@@ -10,16 +10,14 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     marginVertical: 10,
     paddingBottom: 15,
-    // iOS Shadow
-    shadowColor: Colors.tintColor_white,
+    shadowColor: Colors.tintColor_black,
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
-    // Android Shadow
-    elevation: 5
+    elevation: 5,
   },
   imageContainer: {
-    marginBottom: 10
+    marginBottom: 10,
   },
   topSection: {
     flexDirection: "row",
@@ -27,49 +25,54 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 15,
     paddingTop: 15,
-    paddingBottom: 10
+    paddingBottom: 10,
   },
   dateText: {
     fontSize: 17,
     fontWeight: "700",
-    color: Colors.tintColor_black
+    color: Colors.tintColor_white,
   },
   actionsContainer: {
     flexDirection: "row",
-    alignItems: "center"
+    alignItems: "center",
   },
   downloadAllText: {
     fontSize: 15,
     color: Colors.tintColor_black,
-    marginRight: 8
+    marginRight: 8,
   },
   iconButton: {
     marginLeft: 8,
-    padding: 2
+    padding: 2,
   },
   imageBackground: {
     width: width - 30,
     height: 350,
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   paginationDots: {
     flexDirection: "row",
     justifyContent: "center",
-    paddingTop: 10
+    paddingTop: 10,
   },
   dot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    marginHorizontal: 4
+    marginHorizontal: 4,
   },
   activeDot: {
-    backgroundColor: Colors.tintColor_black
+    backgroundColor: Colors.tintColor_black,
   },
   inactiveDot: {
-    backgroundColor: Colors.tintColor_white
-  }
+    backgroundColor: Colors.tintColor_white,
+  },
+  overlayImage: {
+    width: "100%",
+    height: "100%",
+    position: "absolute",
+  },
 });
 
 export default styles;

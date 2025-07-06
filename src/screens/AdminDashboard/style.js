@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
     textAlign: "center",
-    color: Colors.tintColor_white,
+    color: Colors.tintColor_black,
     fontWeight: "bold",
   },
   btn: {
@@ -37,21 +37,9 @@ const styles = StyleSheet.create({
   tableRow: {
     flexDirection: "row",
     paddingVertical: 10,
-    // borderBottomWidth: 0.5,
-    // borderBottomColor: "#444",
-    // alignItems: "center",
-    // justifyContent: "space-between",
-  },
-  headerCell: {
-    flex: 1,
-    fontWeight: "bold",
-    color: Colors.tintColor_white,
-    fontSize: 12,
   },
   tableCell: {
-    // flex: 1,
-    // backgroundColor: "grey",
-    color: Colors.tintColor_white,
+    color: Colors.tintColor_black,
     fontSize: 13,
   },
   logoImage: {
@@ -59,7 +47,6 @@ const styles = StyleSheet.create({
     height: 70,
     resizeMode: "contain",
     marginRight: 5,
-    // backgroundColor: "red",
   },
   notfoundContainer: {
     flex: 1,

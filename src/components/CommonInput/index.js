@@ -1,5 +1,6 @@
 import { TextInput, View } from "react-native";
 import styles from "./style";
+import { Colors } from "../../constant/Colors";
 
 const CommonInput = ({
   placeholder,
@@ -9,7 +10,7 @@ const CommonInput = ({
   numberOfLines,
   maxLength,
   keyboardType,
-  inputMode
+  inputMode,
 }) => {
   return (
     <View>
@@ -21,13 +22,11 @@ const CommonInput = ({
         secureTextEntry={secureTextEntry}
         onChangeText={onChangeText}
         keyboardAppearance="dark"
-        selectionColor="#FFFFFF"
+        selectionColor={Colors.tintColor_black}
         numberOfLines={numberOfLines}
         maxLength={maxLength}
         keyboardType={keyboardType}
         inputMode={inputMode}
-        // inputMode='numeric'
-        // keyboardType='phone-pad'
       />
     </View>
   );

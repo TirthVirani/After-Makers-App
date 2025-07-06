@@ -12,19 +12,7 @@ const DetailScreen = () => {
         <View style={styles.card}>
           <View style={styles.itemContainer}>
             <Text style={styles.labelText}>Bussiness Name : </Text>
-            <Text style={styles.valueText}>Post Maker</Text>
-          </View>
-          <View style={styles.itemContainer}>
-            <Text style={styles.labelText}>Merchant Code(MCC) : </Text>
-            <Text style={styles.valueText}>Advertising Service (7311)</Text>
-          </View>
-          <View style={styles.itemContainer}>
-            <Text style={styles.labelText}>GSTIN : </Text>
-            <Text style={styles.valueText}>24GHYDF56566</Text>
-          </View>
-          <View style={styles.itemContainer}>
-            <Text style={styles.labelText}>PAN : </Text>
-            <Text style={styles.valueText}>AAGG55212</Text>
+            <Text style={styles.valueText}>After Makers</Text>
           </View>
           <View style={styles.itemContainer}>
             <Text style={styles.labelText}>E-mail : </Text>

@@ -3,17 +3,17 @@ import { Colors } from "../../constant/Colors";
 
 const styles = StyleSheet.create({
   safeArea: {
-    justifyContent: "center"
+    justifyContent: "center",
   },
   container: {
     paddingTop: 10,
     paddingBottom: 20,
-    width: "90%"
+    width: "90%",
   },
   pickerRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 5
+    marginBottom: 5,
   },
   button: {
     borderWidth: 1,
@@ -21,23 +21,23 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 5,
-    marginRight: 15
+    marginRight: 15,
   },
   buttonText: {
-    color: Colors.tintColor_white,
+    color: Colors.tintColor_black,
     fontSize: 18,
-    fontWeight: "500"
+    fontWeight: "500",
   },
   fileNameText: {
-    color: "#FFFFFF",
+    color: Colors.tintColor_black,
     fontSize: 15,
     fontWeight: "bold",
-    flexShrink: 1
+    flexShrink: 1,
   },
   allowedTypesText: {
     color: "#A0A0A0",
-    fontSize: 14
-  }
+    fontSize: 14,
+  },
 });
 
 export default styles;

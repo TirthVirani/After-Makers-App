@@ -3,35 +3,35 @@ import { Colors } from "../../constant/Colors";
 
 const styles = StyleSheet.create({
   subcontainer: {
-    marginVertical: 10
+    marginVertical: 10,
   },
   container: {
     padding: 20,
     flex: 1,
     justifyContent: "center",
-    backgroundColor: Colors.backgroundColor
+    backgroundColor: Colors.backgroundColor,
   },
   title: {
     fontSize: 28,
     marginBottom: 10,
     textAlign: "center",
-    color: Colors.tintColor_white
+    color: Colors.tintColor_black,
   },
   signInhandler: {
     padding: 15,
     backgroundColor: Colors.btnColor,
-    borderRadius: 5
+    borderRadius: 5,
   },
   buttonText: {
     textAlign: "center",
     color: Colors.tintColor_white,
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   signUpContainer: {
     margin: 10,
     justifyContent: "center",
-    alignItems: "center"
-  }
+    alignItems: "center",
+  },
 });
 
 export default styles;

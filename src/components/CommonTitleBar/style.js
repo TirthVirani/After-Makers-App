@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 22,
     fontWeight: "500",
-    color: Colors.tintColor_white,
+    // color: Colors.tintColor_white,
   },
 });
 

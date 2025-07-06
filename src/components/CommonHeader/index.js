@@ -1,16 +1,17 @@
-// FestiviyaHeader.js
-import { View, Text } from "react-native";
+import { View, Text, Image } from "react-native";
 import styles from "./style";
-// import { getStatusBarHeight } from 'react-native-status-bar-height';
 
 const CommonHeader = () => {
   return (
     <View style={styles.headerContainer}>
       <View style={styles.curvedBackground}>
-        <Text style={styles.logoText}>After Makers</Text>
+        <Image
+          source={require("../../../assets/Logo_without_bg.png")}
+          style={styles.image}
+          resizeMode="contain"
+        />
       </View>
     </View>
   );
 };
 export default CommonHeader;
-

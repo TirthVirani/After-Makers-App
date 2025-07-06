@@ -8,7 +8,7 @@ import {
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Platform,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../config/auth";
@@ -87,40 +87,40 @@ export default function SignInScreen({ navigation }) {
       ) : (
         <View style={styles.container}>
           <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
+          // behavior={Platform.OS === "ios" ? "padding" : "height"}
           >
-            <ScrollView
-              contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
+            {/* <ScrollView
+              // contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
               keyboardShouldPersistTaps="never"
               showsVerticalScrollIndicator={false}
+            > */}
+            <Text style={styles.title}>Sign In</Text>
+
+            <View style={styles.subcontainer}>
+              <CommonInput
+                placeholder="Email"
+                value={email}
+                secureTextEntry={false}
+                onChangeText={setEmail}
+              />
+              <CommonInput
+                placeholder="Enter 6 Digit Pin"
+                value={pin}
+                secureTextEntry={true}
+                onChangeText={setPin}
+                maxLength={6}
+                keyboardType="numeric"
+                inputMode="numeric"
+              />
+            </View>
+
+            <TouchableOpacity
+              style={styles.signInhandler}
+              onPress={() => handleSignIn()}
             >
-              <Text style={styles.title}>Sign In</Text>
-
-              <View style={styles.subcontainer}>
-                <CommonInput
-                  placeholder="Email"
-                  value={email}
-                  secureTextEntry={false}
-                  onChangeText={setEmail}
-                />
-                <CommonInput
-                  placeholder="Enter 6 Digit Pin"
-                  value={pin}
-                  secureTextEntry={true}
-                  onChangeText={setPin}
-                  maxLength={6}
-                  keyboardType="numeric"
-                  inputMode="numeric"
-                />
-              </View>
-
-              <TouchableOpacity
-                style={styles.signInhandler}
-                onPress={() => handleSignIn()}
-              >
-                <Text style={styles.buttonText}>Sign In</Text>
-              </TouchableOpacity>
-            </ScrollView>
+              <Text style={styles.buttonText}>Sign In</Text>
+            </TouchableOpacity>
+            {/* </ScrollView> */}
           </KeyboardAvoidingView>
         </View>
       )}
