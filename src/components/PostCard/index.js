@@ -6,11 +6,11 @@ import {
   Text,
   TouchableOpacity,
   Alert,
+  Image,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import moment from "moment";
 import { Video } from "expo-av";
-import * as FileSystem from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
 import * as Sharing from "expo-sharing";
 import { Colors } from "../../constant/Colors";
@@ -18,8 +18,11 @@ import styles from "./style";
 import CommonLoadingIndicator from "../CommonLoadingIndicator";
 import { get, ref } from "firebase/database";
 import { database } from "../../config/database";
+import ViewShot from "react-native-view-shot";
 
-const PostCard = () => {
+const PostCard = ({ frameUri }) => {
+  const viewShotRef = useRef({});
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [uploadedImages, setUploadedImages] = useState([]);
@@ -73,30 +76,32 @@ const PostCard = () => {
     return true;
   };
 
-  const downloadAndSaveToGallery = async (fileUrl) => {
-    setLoading(true);
+  const captureAndDownload = async (index) => {
+    const item = uploadedImages[index];
+    const isVideo = item?.uri?.endsWith(".mp4");
+
+    if (isVideo) {
+      Alert.alert("Unsupported", "Capturing videos is not supported.");
+      return;
+    }
+
+    const ref = viewShotRef.current[index];
+
+    if (!ref) {
+      Alert.alert("Error", "View not ready for capture. Please try again.");
+      return;
+    }
+
     const hasPermission = await requestPermission();
-    if (!hasPermission) return;
+    if (!hasPermission) {
+      setLoading(false);
+      return;
+    }
 
     try {
-      let localUri = fileUrl;
+      const uri = await ref.capture();
 
-      // If it's a remote URL, download it
-      if (fileUrl.startsWith("http") || fileUrl.startsWith("https")) {
-        const fileExtension = fileUrl.split(".").pop();
-        const filename = `post_${Date.now()}.${fileExtension}`;
-        const fileUri = FileSystem.cacheDirectory + filename;
-
-        const downloadResumable = FileSystem.createDownloadResumable(
-          fileUrl,
-          fileUri
-        );
-
-        const { uri } = await downloadResumable.downloadAsync();
-        localUri = uri;
-      }
-
-      const asset = await MediaLibrary.createAssetAsync(localUri);
+      const asset = await MediaLibrary.createAssetAsync(uri);
       const album = await MediaLibrary.getAlbumAsync("Download");
 
       if (album) {
@@ -107,44 +112,38 @@ const PostCard = () => {
 
       Alert.alert("Success", "Downloaded successfully and saved to gallery!");
     } catch (error) {
-      console.error("Download/save error:", error);
-      Alert.alert("Error", "Failed to download or save the file.");
-    } finally {
-      setLoading(false);
+      console.error("Capture error:", error);
+      Alert.alert("Error", "Failed to download the image.");
     }
   };
 
-  const shareLocalFile = async (fileUrl) => {
-    setLoading(true);
+  const shareComposedImage = async (index) => {
+    const item = uploadedImages[index];
+    const isVideo = item?.uri?.endsWith(".mp4");
+
+    if (isVideo) {
+      Alert.alert("Unsupported", "Sharing videos is not supported.");
+      return;
+    }
+
+    const ref = viewShotRef.current[index];
+    if (!ref) {
+      Alert.alert("Error", "View not ready for sharing. Please try again.");
+      return;
+    }
+
     try {
-      let localUri = fileUrl;
-
-      // If it's a remote URL, download it
-      if (fileUrl.startsWith("http") || fileUrl.startsWith("https")) {
-        const fileExtension = fileUrl.split(".").pop();
-        const filename = `post_${Date.now()}.${fileExtension}`;
-        const filePath = FileSystem.cacheDirectory + filename;
-
-        const downloadResumable = FileSystem.createDownloadResumable(
-          fileUrl,
-          filePath
-        );
-
-        const { uri } = await downloadResumable.downloadAsync();
-        localUri = uri;
-      }
+      const uri = await ref.capture();
 
       if (!(await Sharing.isAvailableAsync())) {
-        Alert.alert("Sharing not available on this device");
+        Alert.alert("Error", "Sharing is not available on this device.");
         return;
       }
 
-      await Sharing.shareAsync(localUri);
+      await Sharing.shareAsync(uri);
     } catch (error) {
       console.error("Sharing error:", error);
-      Alert.alert("Error", "Failed to share the post.");
-    } finally {
-      setLoading(false);
+      Alert.alert("Error", "Failed to share the composed image.");
     }
   };
 
@@ -160,43 +159,60 @@ const PostCard = () => {
           <View style={styles.actionsContainer}>
             <TouchableOpacity
               style={styles.iconButton}
-              onPress={() => downloadAndSaveToGallery(item.uri)}
+              onPress={() => captureAndDownload(index)}
             >
               <Icon
                 name="download-circle-outline"
                 size={25}
-                color={Colors.tintColor_black}
+                color={Colors.tintColor_white}
               />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.iconButton}
-              onPress={() => shareLocalFile(item.uri)}
+              onPress={() => shareComposedImage(index)}
             >
               <Icon
                 name="share-variant-outline"
                 size={25}
-                color={Colors.tintColor_black}
+                color={Colors.tintColor_white}
               />
             </TouchableOpacity>
           </View>
         </View>
 
-        {isVideo ? (
-          <Video
-            source={{ uri: item.uri }}
-            style={styles.imageBackground}
-            resizeMode="cover"
-            useNativeControls={true}
-            isLooping
-            shouldPlay={activeIndex === index}
-          />
-        ) : (
-          <ImageBackground
-            source={{ uri: item.uri }}
-            style={styles.imageBackground}
-            resizeMode="stretch"
-          />
-        )}
+        {/* Overlayed image container */}
+        <ViewShot
+          ref={(ref) => {
+            if (ref) viewShotRef.current[index] = ref;
+          }}
+          options={{ format: "png", quality: 1 }}
+          style={styles.imageBackground}
+        >
+          {isVideo ? (
+            <Video
+              source={{ uri: item.uri }}
+              style={styles.imageBackground}
+              resizeMode="cover"
+              useNativeControls={true}
+              isLooping
+              shouldPlay={activeIndex === index}
+            />
+          ) : (
+            <ImageBackground
+              source={{ uri: item.uri }}
+              style={styles.imageBackground}
+              resizeMode="stretch"
+            >
+              {/* Overlay Image */}
+              <Image
+                source={{
+                  uri: frameUri,
+                }}
+                style={styles.overlayImage}
+              />
+            </ImageBackground>
+          )}
+        </ViewShot>
       </View>
     );
   };

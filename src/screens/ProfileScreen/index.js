@@ -9,31 +9,17 @@ import CommonTitleBar from "../../components/CommonTitleBar";
 const ProfileScreen = () => {
   const data = useSelector((val) => val.user);
 
-  //   const Start_Date = new Intl.DateTimeFormat("en-US", {
-  //     year: "numeric",
-  //     month: "long",
-  //     day: "numeric"
-  //   }).format(userData?.package?.createdAt);
-  //   const End_Date = new Intl.DateTimeFormat("en-US", {
-  //     year: "numeric",
-  //     month: "long",
-  //     day: "numeric"
-  //   }).format(userData?.package?.expiresAt);
-
-  const Start_Date = moment(data?.package?.createdAt).format(
-    // "DD/MM/YYYY, h:mm:ss a"
-    "DD/MM/YYYY"
-  );
+  const Start_Date = moment(data?.package?.createdAt).format("DD/MM/YYYY");
   const End_Date = moment(data?.package?.expiresAt).format("DD/MM/YYYY");
 
   const detailsData = [
     { label: "Company Name", value: data?.companyName },
-    { label: "Whatsapp no.", value: `+91 ${data?.phoneNumber}` }
+    { label: "Whatsapp no.", value: `+91 ${data?.phoneNumber}` },
   ];
 
   const packageData = [
     { label: "Start Date", value: Start_Date },
-    { label: "End Date", value: End_Date }
+    { label: "End Date", value: End_Date },
   ];
 
   return (
@@ -66,18 +52,6 @@ const ProfileScreen = () => {
             </View>
           ))}
         </View>
-
-        {/* {userData ? (
-          <View style={styles.card}>
-            <Text style={styles.valueText}>
-              {JSON.stringify(userData, null, 2)}
-            </Text>
-          </View>
-        ) : (
-          <View style={styles.card}>
-            <Text style={styles.valueText}>Loading user data...</Text>
-          </View>
-        )} */}
       </View>
     </View>
   );

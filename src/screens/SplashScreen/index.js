@@ -122,7 +122,7 @@ const SplashScreen = ({ navigation }) => {
         <View style={styles.container}>
           <View style={styles.subContainer}>
             <Image
-              source={require("../../../assets/Logo_with_bg.jpg")}
+              source={require("../../../assets/Logo_without_bg.png")}
               style={styles.image}
             />
           </View>

@@ -20,12 +20,6 @@ const CommonTitleBar = ({
   // console.log("titlebar data:::", userData);
   const navigation = useNavigation();
 
-  // const logOutHandler = () =>
-  //   Alert.alert("Logout", "Are you sure to logout?", [
-  //     { text: "Cancel" },
-  //     { text: "OK", onPress: () => navigation.replace("SignInScreen") }
-  //   ]);
-
   const logOutHandler = () =>
     Alert.alert("Logout", "Are you sure you want to logout?", [
       { text: "Cancel", style: "cancel" },
@@ -45,20 +39,6 @@ const CommonTitleBar = ({
     ]);
 
   return (
-    // <View style={[styles.container, style]}>
-    //   {backIcon && (
-    //     <TouchableOpacity style={styles.backicon} onPress={onBackPress}>
-    //       <Icon name="chevron-left" size={40} color={Colors.tintColor_white} />
-    //     </TouchableOpacity>
-    //   )}
-    //   <Text style={styles.titleText}>{userData?.companyName || title}</Text>
-    //   <TouchableOpacity
-    //     style={styles.iconButton}
-    //     onPress={() => logOutHandler()}
-    //   >
-    //     <Icon name="power-standby" size={28} color={Colors.tintColor_white} />
-    //   </TouchableOpacity>
-    // </View>
     <View style={[styles.container, style]}>
       {backIcon ? (
         <>
@@ -73,7 +53,17 @@ const CommonTitleBar = ({
           </View>
 
           <View style={styles.titleCenterContainer}>
-            <Text numberOfLines={1} style={styles.titleText}>
+            <Text
+              numberOfLines={1}
+              style={[
+                styles.titleText,
+                {
+                  color: userData
+                    ? Colors.tintColor_white
+                    : Colors.tintColor_black,
+                },
+              ]}
+            >
               {userData?.companyName || title}
             </Text>
           </View>
@@ -106,7 +96,7 @@ const CommonTitleBar = ({
               <Icon
                 name="power-standby"
                 size={28}
-                color={Colors.tintColor_white}
+                color={Colors.tintColor_black}
               />
             </TouchableOpacity>
           </View>

@@ -4,13 +4,12 @@ import { Colors } from "../../constant/Colors";
 const styles = StyleSheet.create({
   rootContainer: {
     flex: 1,
-    backgroundColor: Colors.backgroundColor
+    backgroundColor: Colors.backgroundColor,
   },
   container: {
     flex: 1,
     paddingVertical: 10,
-    // justifyContent: "center",
-    alignContent: "center"
+    alignContent: "center",
   },
   card: {
     backgroundColor: Colors.btnColor,
@@ -19,29 +18,27 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     marginHorizontal: 20,
     marginBottom: 15,
-    // iOS Shadow
     shadowColor: Colors.tintColor_white,
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
-    // Android Shadow
-    elevation: 5
+    elevation: 5,
   },
   itemContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginVertical: 8
+    marginVertical: 8,
   },
   labelText: {
     fontSize: 19,
-    color: Colors.tintColor_black,
-    fontWeight: "700"
+    color: Colors.tintColor_white,
+    fontWeight: "700",
   },
   valueText: {
     fontSize: 15,
-    color: Colors.tintColor_black,
-    flexShrink: 1 // Allow value to wrap if too long
-  }
+    color: Colors.tintColor_white,
+    flexShrink: 1,
+  },
 });
 
 export default styles;

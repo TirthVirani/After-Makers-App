@@ -6,12 +6,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: Colors.backgroundColor
+    backgroundColor: Colors.backgroundColor,
   },
   text: {
     fontSize: 20,
-    color: Colors.tintColor_white
-  }
+    color: Colors.tintColor_black,
+  },
 });
 
 export default styles;

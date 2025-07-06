@@ -7,13 +7,16 @@ import styles from "./style";
 import { database, ref } from "../../../config/database";
 import * as ImagePicker from "expo-image-picker";
 import { get, push } from "firebase/database";
+import CommonLoadingIndicator from "../../../components/CommonLoadingIndicator";
 
 const PostUploadScreen = ({ navigation }) => {
   const [selected, setSelected] = useState("");
   const [uploadedImages, setUploadedImages] = useState([]);
   const [markedDates, setMarkedDates] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const pickAndUpload = async () => {
+    setLoading(true);
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -31,12 +34,12 @@ const PostUploadScreen = ({ navigation }) => {
         }
 
         const base64 = asset.base64;
-        const type = asset.type || 'image';
+        const type = asset.type || "image";
         const uri = asset.uri;
 
-        console.log('Uploading image with URI:', uri);
+        console.log("Uploading image with URI:", uri);
 
-        await push(ref(database, 'uploaded Images'), {
+        await push(ref(database, "uploaded Images"), {
           mediaBase64: base64,
           type: type,
           uri: uri,
@@ -51,15 +54,19 @@ const PostUploadScreen = ({ navigation }) => {
     } catch (error) {
       console.error("Upload error:", error);
       alert("Upload failed. See console for details.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchImagesForDate = async (date) => {
     try {
-      const snapshot = await get(ref(database, 'uploaded Images'));
+      const snapshot = await get(ref(database, "uploaded Images"));
       if (snapshot.exists()) {
         const data = snapshot.val();
-        const imagesArray = Object.values(data).filter(item => item.date === date);
+        const imagesArray = Object.values(data).filter(
+          (item) => item.date === date
+        );
         setUploadedImages(imagesArray);
       } else {
         setUploadedImages([]);
@@ -71,7 +78,7 @@ const PostUploadScreen = ({ navigation }) => {
 
   const fetchAllMarkedDates = async () => {
     try {
-      const snapshot = await get(ref(database, 'uploaded Images'));
+      const snapshot = await get(ref(database, "uploaded Images"));
       if (snapshot.exists()) {
         const data = snapshot.val();
         const datesMap = {};
@@ -81,7 +88,7 @@ const PostUploadScreen = ({ navigation }) => {
             if (!datesMap[item.date]) {
               datesMap[item.date] = {
                 marked: true,
-                dots: [{ color: 'orange' }]
+                dots: [{ color: "orange" }],
               };
             }
           }
@@ -106,7 +113,6 @@ const PostUploadScreen = ({ navigation }) => {
     }
   };
 
-
   useEffect(() => {
     if (selected) {
       fetchImagesForDate(selected);
@@ -115,64 +121,67 @@ const PostUploadScreen = ({ navigation }) => {
   }, [selected, uploadedImages, uploadedImages.length]);
 
   return (
-    <View style={styles.rootContainer}>
-      <CommonTitleBar
-        title="Upload Post"
-        style={{ backgroundColor: Colors.btnColor, paddingTop: 30 }}
-        backIcon
-        onBackPress={() => navigation.goBack()}
-      />
-      <View>
-        <Calendar
-          onDayPress={(day) => {
-            setSelected(day.dateString);
-          }}
-          markedDates={markedDates}
-          theme={{
-            calendarBackground: Colors.backgroundColor,
-            textSectionTitleColor: Colors.tintColor_white,
-            todayTextColor: Colors.btnColor,
-            dayTextColor: Colors.tintColor_white,
-            textDisabledColor: Colors.borderColor,
-            disabledDotColor: Colors.borderColor,
-            monthTextColor: Colors.tintColor_white,
-            textMonthFontWeight: 'bold',
-            textMonthFontSize: 18,
-            dotColor: Colors.lightRed
-          }}
-        />
-      </View>
-      <View>
-        <TouchableOpacity
-          style={[
-            styles.uploadBtn,
-            { opacity: selected ? 1 : 0.5 },
-          ]}
-          onPress={pickAndUpload}
-          disabled={!selected}
-        >
-          <Text style={styles.uploadbtntext}>Upload Post Here</Text>
-        </TouchableOpacity>
-      </View>
+    <>
+      {loading ? (
+        <CommonLoadingIndicator />
+      ) : (
+        <View style={styles.rootContainer}>
+          <CommonTitleBar
+            title="Upload Post"
+            style={{ backgroundColor: Colors.btnColor, paddingTop: 30 }}
+            backIcon
+            onBackPress={() => navigation.goBack()}
+          />
+          <View>
+            <Calendar
+              onDayPress={(day) => {
+                setSelected(day.dateString);
+              }}
+              markedDates={markedDates}
+              theme={{
+                calendarBackground: Colors.backgroundColor,
+                textSectionTitleColor: Colors.tintColor_black,
+                todayTextColor: Colors.btnColor,
+                dayTextColor: Colors.tintColor_black,
+                textDisabledColor: "#808080",
+                disabledDotColor: "#808080",
+                monthTextColor: Colors.tintColor_black,
+                textMonthFontWeight: "bold",
+                textMonthFontSize: 18,
+                dotColor: Colors.lightRed,
+              }}
+            />
+          </View>
+          <View>
+            <TouchableOpacity
+              style={[styles.uploadBtn, { opacity: selected ? 1 : 0.5 }]}
+              onPress={pickAndUpload}
+              disabled={!selected}
+            >
+              <Text style={styles.uploadbtntext}>Upload Post Here</Text>
+            </TouchableOpacity>
+          </View>
 
-      {uploadedImages.length > 0 && (
-        <FlatList
-          data={uploadedImages}
-          renderItem={({ item }) => (
-            <View style={{ paddingVertical: 10 }}>
-              <Image
-                source={{ uri: item.uri }}
-                style={{ height: "70%", aspectRatio: 1, margin: 8 }}
-                resizeMode="cover"
-              />
-            </View>
+          {uploadedImages.length > 0 && (
+            <FlatList
+              data={uploadedImages}
+              renderItem={({ item }) => (
+                <View style={{ paddingVertical: 10 }}>
+                  <Image
+                    source={{ uri: item.uri }}
+                    style={{ height: "70%", aspectRatio: 1, margin: 8 }}
+                    resizeMode="cover"
+                  />
+                </View>
+              )}
+              keyExtractor={(_, index) => index.toString()}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+            />
           )}
-          keyExtractor={(_, index) => index.toString()}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-        />
+        </View>
       )}
-    </View>
+    </>
   );
 };
 

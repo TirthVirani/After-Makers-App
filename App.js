@@ -20,7 +20,7 @@ export default function App() {
     <Provider store={store}>
       <NavigationContainer>
         <SafeAreaView style={styles.container}>
-          <StatusBar style="light" />
+          <StatusBar style="dark" />
           <Stack.Navigator>
             <Stack.Screen
               name="SplashScreen"

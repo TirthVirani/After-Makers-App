@@ -16,8 +16,10 @@ import { ref, onValue } from "firebase/database";
 import moment from "moment";
 import { Colors } from "../../constant/Colors";
 import Icon from "@react-native-vector-icons/material-icons";
+import { useDispatch } from "react-redux";
 
 const AdminDashboard = ({ navigation }) => {
+  const dispatch = useDispatch();
   const [users, setUsers] = useState([]);
   useEffect(() => {
     const backAction = () => {
@@ -37,7 +39,6 @@ const AdminDashboard = ({ navigation }) => {
     return () => backHandler.remove();
   }, []);
 
-  // Fetch users from Firestore
   useEffect(() => {
     const usersRef = ref(database, "users");
 
@@ -53,6 +54,7 @@ const AdminDashboard = ({ navigation }) => {
           pin: item.pin,
           logo: item.fileUrl,
           address: item.address,
+          phoneNumber: item.phoneNumber,
         }));
         setUsers(userData);
       } else {
@@ -63,11 +65,12 @@ const AdminDashboard = ({ navigation }) => {
     return () => unsubscribe();
   }, []);
 
-  // Render each user row
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.tableRow}
-      onPress={() => navigation.navigate("UserDetailsScreen", item)}
+      onPress={() => {
+        navigation.navigate("UserDetailsScreen", item);
+      }}
     >
       <View
         style={{
@@ -90,7 +93,6 @@ const AdminDashboard = ({ navigation }) => {
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-          // backgroundColor: "red",
         }}
       >
         <View>
@@ -105,7 +107,7 @@ const AdminDashboard = ({ navigation }) => {
           </Text>
         </View>
         <View style={{ alignItems: "center" }}>
-          <Icon name="chevron-right" size={32} color={Colors.tintColor_white} />
+          <Icon name="chevron-right" size={32} color={Colors.tintColor_black} />
         </View>
       </View>
     </TouchableOpacity>
@@ -123,13 +125,7 @@ const AdminDashboard = ({ navigation }) => {
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
           // ListHeaderComponent={
-          //   <View style={styles.tableHeader}>
-          //     <Text style={styles.headerCell}>Logo</Text>
-          //     <Text style={styles.headerCell}>Company Name</Text>
-          //     <Text style={styles.headerCell}>Email</Text>
-          //     <Text style={styles.headerCell}>Pin</Text>
-          //     <Text style={styles.headerCell}>Expired Date</Text>
-          //   </View>
+          //   search feild
           // }
           ListEmptyComponent={
             <View style={styles.notfoundContainer}>
@@ -146,7 +142,9 @@ const AdminDashboard = ({ navigation }) => {
 
         <TouchableOpacity
           style={styles.btn}
-          onPress={() => navigation.navigate("RegisterScreen")}
+          onPress={() =>
+            navigation.navigate("RegisterScreen", { from: "AdminDashboard" })
+          }
         >
           <Text style={styles.btnText}>Add New User</Text>
         </TouchableOpacity>

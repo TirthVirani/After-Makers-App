@@ -1,8 +1,8 @@
 export const Colors = {
-  backgroundColor: "#010133",
-  tintColor_black: "#000",
+  backgroundColor: "#E7EDFB",
+  tintColor_black: "#0D0F17",
   tintColor_white: "#fff",
-  btnColor: "#0cc9f1",
+  btnColor: "#5475ED",
   borderColor: "#3A3A3C",
   lightRed: "#ff6242",
 };

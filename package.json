@@ -37,6 +37,7 @@
     "react-native-paper": "^5.14.1",
     "react-native-phone-number-input": "^2.1.0",
     "react-native-safe-area-context": "^5.5.1",
+    "react-native-view-shot": "^4.0.3",
     "react-native-web": "^0.20.0",
     "react-native-webview": "^13.13.5",
     "react-redux": "^9.2.0"

@@ -13,8 +13,12 @@ import {
 } from "react-native";
 
 import { ref, set } from "firebase/database";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { useDispatch } from "react-redux";
+import {
+  createUserWithEmailAndPassword,
+  deleteUser,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { useDispatch, useSelector } from "react-redux";
 import styles from "./style";
 import ImagePicker from "../../../components/ImagePicker";
 import CommonInput from "../../../components/CommonInput";
@@ -23,66 +27,142 @@ import CommonLoadingIndicator from "../../../components/CommonLoadingIndicator";
 import { Colors } from "../../../constant/Colors";
 import { database } from "../../../config/database";
 import { auth } from "../../../config/auth";
-import { addUser } from "../../../redux/UserSlice";
+import { setUser } from "../../../redux/UserSlice";
 
-export default function RegisterScreen({ navigation }) {
+export default function RegisterScreen({ navigation, route }) {
+  const { from } = route?.params;
+  const data = useSelector((state) => state.user);
+  console.log("Register Screen redux data : ", from, data);
+
   const dispatch = useDispatch();
-  const [companyName, setCompanyName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [pin, setPin] = useState("");
-  const [address, setAddress] = useState("");
-  const [fileUrl, setFileUrl] = useState(null);
+  const [companyName, setCompanyName] = useState(data?.companyName || "");
+  const [email, setEmail] = useState(data?.email || "");
+  const [phoneNumber, setPhoneNumber] = useState(data?.phoneNumber || "");
+  const [pin, setPin] = useState(data?.pin || "");
+  const [address, setAddress] = useState(data?.address || "");
+  const [fileUrl, setFileUrl] = useState(data?.logo || null);
   const [selectedPlan, setSelectedPlan] = useState("1m");
   const [loading, setLoading] = useState(false);
+  const id = Math.ceil(Math.random() * 1000);
 
   const handleAddUser = async () => {
     setLoading(true);
-    if (
-      !companyName ||
-      !email ||
-      !phoneNumber ||
-      !pin ||
-      !address ||
-      !fileUrl
-    ) {
-      Alert.alert("Validation Error", "Please fill in all fields");
-      return;
+
+    const now = Date.now();
+    let expiresAt;
+    if (selectedPlan === "1m") {
+      expiresAt = now + 30 * 24 * 60 * 60 * 1000;
+    } else if (selectedPlan === "2y") {
+      expiresAt = now + 2 * 365 * 24 * 60 * 60 * 1000;
     }
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        pin
-      );
       const userRef = ref(database, "users/" + email.replace(".", ","));
-      const id = Math.ceil(Math.random() * 1000);
       const now = Date.now();
-      let expiresAt;
-      if (selectedPlan === "1m") {
-        expiresAt = now + 30 * 24 * 60 * 60 * 1000; // 1 month
-      } else if (selectedPlan === "2y") {
-        expiresAt = now + 2 * 365 * 24 * 60 * 60 * 1000; // 2 years
+
+      if (from === "UserDetailsScreen") {
+        if (!companyName || !email || !phoneNumber || !pin || !address) {
+          Alert.alert("Validation Error", "Please fill in all fields");
+          setLoading(false);
+          return;
+        }
+
+        const originalEmail = data?.email;
+        const originalKey = originalEmail.replace(".", ",");
+        const newKey = email.replace(".", ",");
+
+        const userRef = ref(database, "users/" + newKey);
+
+        const updatedFields = {
+          id,
+          companyName,
+          email,
+          phoneNumber,
+          pin,
+          address,
+          package: {
+            createdAt: now,
+            expiresAt,
+          },
+          fileUrl,
+        };
+
+        try {
+          await createUserWithEmailAndPassword(auth, email, pin);
+          console.log(`Created new Firebase Auth user: ${email}`);
+        } catch (error) {
+          console.log("Error creating new Firebase Auth user:", error);
+          Alert.alert("Error", "Failed to create new auth user");
+          setLoading(false);
+          return;
+        }
+
+        await set(userRef, updatedFields);
+
+        if (originalEmail !== email) {
+          try {
+            await signInWithEmailAndPassword(auth, originalEmail, pin);
+            const currentUser = auth.currentUser;
+            if (currentUser) {
+              await deleteUser(currentUser);
+              console.log(`Deleted old Firebase Auth user: ${originalEmail}`);
+            }
+          } catch (error) {
+            console.log(
+              `Error deleting old auth user for ${originalEmail}:`,
+              error
+            );
+          }
+
+          await set(ref(database, "users/" + originalKey), null);
+        }
+
+        Alert.alert("Success", "User data updated successfully");
+      } else {
+        // 🆕 Register mode
+        if (
+          !companyName ||
+          !email ||
+          !phoneNumber ||
+          !pin ||
+          !address ||
+          !fileUrl
+        ) {
+          Alert.alert("Validation Error", "Please fill in all fields");
+          return;
+        }
+
+        if (!fileUrl) {
+          Alert.alert("Validation Error", "Please upload a file");
+          setLoading(false);
+          return;
+        }
+
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          pin
+        );
+
+        await set(userRef, {
+          id,
+          companyName,
+          email,
+          phoneNumber,
+          pin,
+          address,
+          fileUrl,
+          package: {
+            createdAt: now,
+            expiresAt,
+          },
+        });
+
+        Alert.alert("Success", "User registered successfully");
       }
 
-      await set(userRef, {
-        id,
-        companyName,
-        email,
-        phoneNumber,
-        pin,
-        address,
-        fileUrl,
-        package: {
-          createdAt: now,
-          expiresAt: expiresAt,
-        },
-      });
-      Alert.alert("Success", "User registered successfully");
-
       dispatch(
-        addUser({
+        setUser({
           id,
           companyName,
           email,
@@ -97,8 +177,8 @@ export default function RegisterScreen({ navigation }) {
         })
       );
     } catch (error) {
-      console.error("Error adding user:", error);
-      Alert.alert("Error", "Failed to register user");
+      console.error("Error:", error);
+      Alert.alert("Error", "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -111,7 +191,11 @@ export default function RegisterScreen({ navigation }) {
       ) : (
         <SafeAreaView style={{ flex: 1 }}>
           <CommonTitleBar
-            title="Register new user"
+            title={
+              from === "UserDetailsScreen"
+                ? "Edit User Data"
+                : "Register new user"
+            }
             style={{ backgroundColor: Colors.btnColor, paddingTop: 30 }}
             backIcon
             onBackPress={() => navigation.goBack()}
@@ -128,9 +212,7 @@ export default function RegisterScreen({ navigation }) {
                 keyboardShouldPersistTaps="never"
                 showsVerticalScrollIndicator={false}
               >
-                {/* <Text style={styles.title}>Register new user</Text> */}
-
-                <View style={styles.subcontainer}>
+                <View>
                   <CommonInput
                     placeholder="Company Name"
                     value={companyName}
@@ -168,7 +250,14 @@ export default function RegisterScreen({ navigation }) {
                       ]}
                       onPress={() => setSelectedPlan("1m")}
                     >
-                      <Text style={styles.radioText}>1 Month</Text>
+                      <Text
+                        style={[
+                          styles.radioText,
+                          selectedPlan === "1m" && styles.radioTextSelected,
+                        ]}
+                      >
+                        1 Month
+                      </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={[
@@ -177,7 +266,14 @@ export default function RegisterScreen({ navigation }) {
                       ]}
                       onPress={() => setSelectedPlan("2y")}
                     >
-                      <Text style={styles.radioText}>2 Years</Text>
+                      <Text
+                        style={[
+                          styles.radioText,
+                          selectedPlan === "2y" && styles.radioTextSelected,
+                        ]}
+                      >
+                        2 Years
+                      </Text>
                     </TouchableOpacity>
                   </View>
 
@@ -194,7 +290,9 @@ export default function RegisterScreen({ navigation }) {
                     style={styles.signInhandler}
                     onPress={handleAddUser}
                   >
-                    <Text style={styles.buttonText}>Add User</Text>
+                    <Text style={styles.buttonText}>
+                      {from === "UserDetailsScreen" ? "Update" : "Add User"}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </ScrollView>

@@ -16,13 +16,13 @@ const HomeScreen = () => {
         { text: "Cancel", style: "cancel" },
         {
           text: "OK",
-          onPress: () => BackHandler.exitApp()
-        }
+          onPress: () => BackHandler.exitApp(),
+        },
       ]);
       return true;
     };
     const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
+      "hardwareBackPress",
       backAction
     );
 
@@ -33,7 +33,7 @@ const HomeScreen = () => {
     <View style={styles.rootContainer}>
       <CommonHeader />
       <CommonTitleBar />
-      <PostCard />
+      <PostCard frameUri={data?.fileUrl} />
     </View>
   );
 };

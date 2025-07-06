@@ -9,39 +9,26 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: Colors.backgroundColor
+    backgroundColor: Colors.backgroundColor,
   },
   subContainer: {
     padding: 20,
-    // width: width - 40,
-    // aspectRatio: 1,
+    width: width - 35,
+    height: width / 3,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 25,
-    // backgroundColor: Colors.btnColor,
-    // shadowColor: Colors.tintColor,
-    // shadowOpacity: 0.1,
-    // shadowRadius: 2,
-    // elevation: 10
   },
   image: {
-    width: width - 40,
-    height: width / 3 
-    // aspectRatio: 1
+    width: "100%",
+    height: "100%",
   },
-  // title: {
-  //   fontSize: 50,
-  //   marginBottom: 10,
-  //   textAlign: "center",
-  //   color: Colors.tintColor
-  // },
   tagLine: {
-    // margin: 20,
     fontSize: 17,
     marginBottom: 10,
     textAlign: "center",
-    color: Colors.tintColor_white
-  }
+    color: Colors.tintColor_black,
+  },
 });
 
 export default styles;
