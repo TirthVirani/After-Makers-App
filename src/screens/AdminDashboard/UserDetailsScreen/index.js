@@ -111,6 +111,7 @@ const UserDetailsScreen = ({ navigation, route }) => {
                 onPress={() =>
                   navigation.navigate("RegisterScreen", {
                     from: "UserDetailsScreen",
+                    data: userData,
                   })
                 }
               >

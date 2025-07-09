@@ -12,6 +12,8 @@ import AdminDashboard from "./src/screens/AdminDashboard";
 import PostUploadScreen from "./src/screens/AdminDashboard/PostUploadScreen";
 import RegisterScreen from "./src/screens/AdminDashboard/RegisterScreen";
 import UserDetailsScreen from "./src/screens/AdminDashboard/UserDetailsScreen";
+import TermsAndConditionScreen from "./src/screens/TermsAndConditionScreen";
+import PrivacyPolicyScreen from "./src/screens/PrivacyPolicyScreen";
 
 const Stack = createStackNavigator();
 
@@ -67,6 +69,20 @@ export default function App() {
             <Stack.Screen
               name="UserDetailsScreen"
               component={UserDetailsScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="TermsAndConditionScreen"
+              component={TermsAndConditionScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="PrivacyPolicyScreen"
+              component={PrivacyPolicyScreen}
               options={{
                 headerShown: false,
               }}

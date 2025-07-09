@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Post_maker",
-    "slug": "Post_maker",
+    "name": "After Makers",
+    "slug": "After Makers",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -17,7 +17,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon.png",
+        "resizeMode": "contain",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true
