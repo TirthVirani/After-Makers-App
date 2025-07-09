@@ -39,6 +39,23 @@ const styles = StyleSheet.create({
     color: Colors.tintColor_white,
     flexShrink: 1,
   },
+  btnContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  btn: {
+    backgroundColor: Colors.btnColor,
+    alignItems: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    marginHorizontal: 10,
+    marginTop: 10,
+    borderRadius: 8,
+  },
+  btnText: {
+    color: Colors.tintColor_white,
+    fontWeight: "bold",
+  },
 });
 
 export default styles;

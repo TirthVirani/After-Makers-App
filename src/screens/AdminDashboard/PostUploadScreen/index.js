@@ -6,7 +6,7 @@ import { Calendar } from "react-native-calendars";
 import styles from "./style";
 import { database, ref } from "../../../config/database";
 import * as ImagePicker from "expo-image-picker";
-import { get, push } from "firebase/database";
+import { get, push, remove } from "firebase/database";
 import CommonLoadingIndicator from "../../../components/CommonLoadingIndicator";
 
 const PostUploadScreen = ({ navigation }) => {
@@ -113,10 +113,36 @@ const PostUploadScreen = ({ navigation }) => {
     }
   };
 
+  const deleteOldImages = async () => {
+    try {
+      const snapshot = await get(ref(database, "uploaded Images"));
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const now = Date.now();
+        const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000;
+
+        const deletionPromises = [];
+
+        Object.entries(data).forEach(([key, item]) => {
+          if (item.timestamp && now - item.timestamp > sevenDaysInMs) {
+            const itemRef = ref(database, `uploaded Images/${key}`);
+            deletionPromises.push(remove(itemRef));
+          }
+        });
+
+        await Promise.all(deletionPromises);
+        console.log("Old images deleted successfully.");
+      }
+    } catch (error) {
+      console.error("Error deleting old images:", error);
+    }
+  };
+
   useEffect(() => {
     if (selected) {
       fetchImagesForDate(selected);
     }
+    deleteOldImages();
     fetchAllMarkedDates();
   }, [selected, uploadedImages, uploadedImages.length]);
 

@@ -30,9 +30,18 @@ import { auth } from "../../../config/auth";
 import { setUser } from "../../../redux/UserSlice";
 
 export default function RegisterScreen({ navigation, route }) {
-  const { from } = route?.params;
-  const data = useSelector((state) => state.user);
+  const { from, data } = route?.params;
+  // const data = useSelector((state) => state.user);
   console.log("Register Screen redux data : ", from, data);
+
+  const date1 = new Date(data?.createdDate); // August 8, 2025
+  const date2 = new Date(data?.expiresDate); // September 7, 2025
+  // Calculate difference in months
+  const yearsDiff = date2.getFullYear() - date1.getFullYear();
+  const monthsDiff = date2.getMonth() - date1.getMonth();
+  const totalMonthDiff = yearsDiff * 12 + monthsDiff;
+  console.log(`Difference in months: ${totalMonthDiff}`);
+  // console.log(`Difference in years: ${totalMonthDiff / 12}`);
 
   const dispatch = useDispatch();
   const [companyName, setCompanyName] = useState(data?.companyName || "");
@@ -41,7 +50,9 @@ export default function RegisterScreen({ navigation, route }) {
   const [pin, setPin] = useState(data?.pin || "");
   const [address, setAddress] = useState(data?.address || "");
   const [fileUrl, setFileUrl] = useState(data?.logo || null);
-  const [selectedPlan, setSelectedPlan] = useState("1m");
+  const [selectedPlan, setSelectedPlan] = useState(
+    totalMonthDiff > 12 ? "2y" : totalMonthDiff > 1 ? "1y" : "1m" || "1m"
+  );
   const [loading, setLoading] = useState(false);
   const id = Math.ceil(Math.random() * 1000);
 
@@ -51,9 +62,11 @@ export default function RegisterScreen({ navigation, route }) {
     const now = Date.now();
     let expiresAt;
     if (selectedPlan === "1m") {
-      expiresAt = now + 30 * 24 * 60 * 60 * 1000;
+      expiresAt = now + 30 * 24 * 60 * 60 * 1000; // 30 days
+    } else if (selectedPlan === "1y") {
+      expiresAt = now + 365 * 24 * 60 * 60 * 1000; // 1 year
     } else if (selectedPlan === "2y") {
-      expiresAt = now + 2 * 365 * 24 * 60 * 60 * 1000;
+      expiresAt = now + 2 * 365 * 24 * 60 * 60 * 1000; // 2 years
     }
 
     try {
@@ -87,14 +100,25 @@ export default function RegisterScreen({ navigation, route }) {
           fileUrl,
         };
 
-        try {
-          await createUserWithEmailAndPassword(auth, email, pin);
-          console.log(`Created new Firebase Auth user: ${email}`);
-        } catch (error) {
-          console.log("Error creating new Firebase Auth user:", error);
-          Alert.alert("Error", "Failed to create new auth user");
-          setLoading(false);
-          return;
+        // try {
+        //   await createUserWithEmailAndPassword(auth, email, pin);
+        //   console.log(`Created new Firebase Auth user: ${email}`);
+        // } catch (error) {
+        //   console.log("Error creating new Firebase Auth user:", error);
+        //   Alert.alert("Error", "Failed to update Data");
+        //   setLoading(false);
+        //   return;
+        // }
+        if (originalEmail !== email) {
+          try {
+            await createUserWithEmailAndPassword(auth, email, pin);
+            console.log(`Created new Firebase Auth user: ${email}`);
+          } catch (error) {
+            console.log("Error creating new Firebase Auth user:", error);
+            Alert.alert("Error", "Failed to update Data");
+            setLoading(false);
+            return;
+          }
         }
 
         await set(userRef, updatedFields);
@@ -241,8 +265,8 @@ export default function RegisterScreen({ navigation, route }) {
                     inputMode="numeric"
                   />
 
+                  <Text style={styles.radioLabel}>Select Plan:</Text>
                   <View style={styles.radioContainer}>
-                    <Text style={styles.radioLabel}>Select Plan:</Text>
                     <TouchableOpacity
                       style={[
                         styles.radioButton,
@@ -257,6 +281,22 @@ export default function RegisterScreen({ navigation, route }) {
                         ]}
                       >
                         1 Month
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        styles.radioButton,
+                        selectedPlan === "1y" && styles.radioButtonSelected,
+                      ]}
+                      onPress={() => setSelectedPlan("1y")}
+                    >
+                      <Text
+                        style={[
+                          styles.radioText,
+                          selectedPlan === "1y" && styles.radioTextSelected,
+                        ]}
+                      >
+                        1 Year
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity

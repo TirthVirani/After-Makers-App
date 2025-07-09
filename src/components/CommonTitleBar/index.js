@@ -64,7 +64,7 @@ const CommonTitleBar = ({
                 },
               ]}
             >
-              {userData?.companyName || title}
+              {title || userData?.companyName}
             </Text>
           </View>
 

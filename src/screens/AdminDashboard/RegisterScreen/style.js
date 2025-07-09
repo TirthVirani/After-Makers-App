@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
   },
   radioButton: {
-    marginHorizontal: 10,
+    // marginRight: 10,
     padding: 10,
     borderWidth: 1,
     borderColor: Colors.btnColor,
