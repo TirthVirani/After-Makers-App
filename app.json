@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "After Makers",
-    "slug": "After Makers",
+    "slug": "after-makers",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,13 +21,19 @@
         "resizeMode": "contain",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.tirthvirani1103.aftermakers"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-video"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "e9228015-79df-4e26-8112-94e7746a9376"
+      }
+    }
   }
 }

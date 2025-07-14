@@ -19,7 +19,7 @@ const PostUploadScreen = ({ navigation }) => {
     setLoading(true);
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ImagePicker.MediaType,
         base64: true,
         quality: 0.5,
       });
@@ -47,7 +47,7 @@ const PostUploadScreen = ({ navigation }) => {
           timestamp: Date.now(),
         });
 
-        alert("Upload successful!");
+        alert("Image upload successful!");
       } else {
         console.log("Image selection was cancelled.");
       }
@@ -142,9 +142,11 @@ const PostUploadScreen = ({ navigation }) => {
     if (selected) {
       fetchImagesForDate(selected);
     }
-    deleteOldImages();
     fetchAllMarkedDates();
   }, [selected, uploadedImages, uploadedImages.length]);
+  useEffect(() => {
+    deleteOldImages();
+  }, []);
 
   return (
     <>

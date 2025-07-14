@@ -73,6 +73,17 @@ const styles = StyleSheet.create({
     height: "100%",
     position: "absolute",
   },
+  emptyContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 20,
+    marginHorizontal: 10
+  },
+  emptyText: {
+    alignSelf: "center",
+    color: Colors.tintColor_white,
+    fontWeight: "bold",
+  },
 });
 
 export default styles;

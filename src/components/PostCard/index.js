@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import moment from "moment";
-import { Video } from "expo-av";
 import * as MediaLibrary from "expo-media-library";
 import * as Sharing from "expo-sharing";
 import { Colors } from "../../constant/Colors";
@@ -78,12 +77,6 @@ const PostCard = ({ frameUri }) => {
 
   const captureAndDownload = async (index) => {
     const item = uploadedImages[index];
-    const isVideo = item?.uri?.endsWith(".mp4");
-
-    if (isVideo) {
-      Alert.alert("Unsupported", "Capturing videos is not supported.");
-      return;
-    }
 
     const ref = viewShotRef.current[index];
 
@@ -119,12 +112,6 @@ const PostCard = ({ frameUri }) => {
 
   const shareComposedImage = async (index) => {
     const item = uploadedImages[index];
-    const isVideo = item?.uri?.endsWith(".mp4");
-
-    if (isVideo) {
-      Alert.alert("Unsupported", "Sharing videos is not supported.");
-      return;
-    }
 
     const ref = viewShotRef.current[index];
     if (!ref) {
@@ -148,8 +135,6 @@ const PostCard = ({ frameUri }) => {
   };
 
   const renderItem = ({ item, index }) => {
-    const isVideo = item.uri.endsWith(".mp4");
-
     return (
       <View style={styles.imageContainer}>
         <View style={styles.topSection}>
@@ -180,7 +165,6 @@ const PostCard = ({ frameUri }) => {
           </View>
         </View>
 
-        {/* Overlayed image container */}
         <ViewShot
           ref={(ref) => {
             if (ref) viewShotRef.current[index] = ref;
@@ -188,30 +172,18 @@ const PostCard = ({ frameUri }) => {
           options={{ format: "png", quality: 1 }}
           style={styles.imageBackground}
         >
-          {isVideo ? (
-            <Video
-              source={{ uri: item.uri }}
-              style={styles.imageBackground}
-              resizeMode="cover"
-              useNativeControls={true}
-              isLooping
-              shouldPlay={activeIndex === index}
+          <ImageBackground
+            source={{ uri: item.uri }}
+            style={styles.imageBackground}
+            resizeMode="stretch"
+          >
+            <Image
+              source={{
+                uri: frameUri,
+              }}
+              style={styles.overlayImage}
             />
-          ) : (
-            <ImageBackground
-              source={{ uri: item.uri }}
-              style={styles.imageBackground}
-              resizeMode="stretch"
-            >
-              {/* Overlay Image */}
-              <Image
-                source={{
-                  uri: frameUri,
-                }}
-                style={styles.overlayImage}
-              />
-            </ImageBackground>
-          )}
+          </ImageBackground>
         </ViewShot>
       </View>
     );
@@ -232,6 +204,11 @@ const PostCard = ({ frameUri }) => {
             showsHorizontalScrollIndicator={false}
             onViewableItemsChanged={onViewableItemsChanged}
             viewabilityConfig={{ viewAreaCoveragePercentThreshold: 50 }}
+            ListEmptyComponent={() => (
+              <View style={styles.emptyContainer}>
+                <Text style={styles.emptyText}>No more post available...</Text>
+              </View>
+            )}
           />
           <View style={styles.paginationDots}>
             {uploadedImages.map((_, index) => (
